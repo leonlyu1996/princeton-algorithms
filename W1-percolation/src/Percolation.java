@@ -7,8 +7,8 @@ public class Percolation {
     private final WeightedQuickUnionUF ufWithTop;
     private int openSites;
     private final int n;
-    private final int hiddenTopSite;
-    private final int hiddenBottomSite;
+    private final int virtualTopSite;
+    private final int virtualBottomSite;
 
     // create n-by-n grid, with all sites blocked
     public Percolation(int n) {
@@ -16,68 +16,68 @@ public class Percolation {
             throw new java.lang.IllegalArgumentException("n should be a positive integer!");
         }
         this.n = n;
-        this.hiddenTopSite = n * n;
-        this.hiddenBottomSite = n * n + 1;
+        this.virtualTopSite = n * n;
+        this.virtualBottomSite = n * n + 1;
         this.sites = new boolean[n][n];
         this.ufWithTopAndBottom = new WeightedQuickUnionUF(n * n + 2);
         this.ufWithTop = new WeightedQuickUnionUF(n * n + 1);
         this.openSites = 0;
     }
 
-    private int to1D(int row, int col) {
+    private int xyTo1D(int row, int col) {
         return (row - 1) * this.n + col - 1;
+    }
+
+    private void validateIndices(int row, int col) {
+        if (row <= 0 || row > this.n || col <= 0 || col > this.n) {
+            throw new java.lang.IllegalArgumentException("Index out of bounds.");
+        }
     }
 
     // open site (row, col) if it is not open already
     public void open(int row, int col) {
-        if (row <= 0 || row > this.n || col <= 0 || col > this.n) {
-            throw new java.lang.IllegalArgumentException("Index out of bounds.");
-        }
+        validateIndices(row, col);
         if (isOpen(row, col)) {
             return;
         }
-        this.sites[row-1][col-1] = true;
-        int thisSite = to1D(row, col);
+        this.sites[row - 1][col - 1] = true;
+        int thisSite = xyTo1D(row, col);
         if (row - 1 > 0 && isOpen(row - 1, col)) {
-            this.ufWithTopAndBottom.union(thisSite, to1D(row - 1, col));
-            this.ufWithTop.union(thisSite, to1D(row - 1, col));
+            this.ufWithTopAndBottom.union(thisSite, xyTo1D(row - 1, col));
+            this.ufWithTop.union(thisSite, xyTo1D(row - 1, col));
         }
         if (row + 1 <= this.n && isOpen(row + 1, col)) {
-            this.ufWithTopAndBottom.union(thisSite, to1D(row + 1, col));
-            this.ufWithTop.union(thisSite, to1D(row + 1, col));
+            this.ufWithTopAndBottom.union(thisSite, xyTo1D(row + 1, col));
+            this.ufWithTop.union(thisSite, xyTo1D(row + 1, col));
         }
         if (col - 1 > 0 && isOpen(row, col - 1)) {
-            this.ufWithTopAndBottom.union(thisSite, to1D(row, col - 1));
-            this.ufWithTop.union(thisSite, to1D(row, col - 1));
+            this.ufWithTopAndBottom.union(thisSite, xyTo1D(row, col - 1));
+            this.ufWithTop.union(thisSite, xyTo1D(row, col - 1));
         }
         if (col + 1 <= this.n && isOpen(row, col + 1)) {
-            this.ufWithTopAndBottom.union(thisSite, to1D(row, col + 1));
-            this.ufWithTop.union(thisSite, to1D(row, col + 1));
+            this.ufWithTopAndBottom.union(thisSite, xyTo1D(row, col + 1));
+            this.ufWithTop.union(thisSite, xyTo1D(row, col + 1));
         }
         if (row == 1) {
-            this.ufWithTopAndBottom.union(thisSite, hiddenTopSite);
-            this.ufWithTop.union(thisSite, hiddenTopSite);
+            this.ufWithTopAndBottom.union(thisSite, virtualTopSite);
+            this.ufWithTop.union(thisSite, virtualTopSite);
         }
         if (row == this.n) {
-            this.ufWithTopAndBottom.union(thisSite, hiddenBottomSite);
+            this.ufWithTopAndBottom.union(thisSite, virtualBottomSite);
         }
         this.openSites++;
     }
 
     // is site (row, col) open?
     public boolean isOpen(int row, int col) {
-        if (row <= 0 || row > this.n || col <= 0 || col > this.n) {
-            throw new java.lang.IllegalArgumentException("Index out of bounds.");
-        }
-        return this.sites[row-1][col-1];
+        validateIndices(row, col);
+        return this.sites[row - 1][col - 1];
     }
 
     // is site (row, col) full?
     public boolean isFull(int row, int col) {
-        if (row <= 0 || row > this.n || col <= 0 || col > this.n) {
-            throw new java.lang.IllegalArgumentException("Index out of bounds.");
-        }
-        return this.ufWithTop.connected(to1D(row, col), this.hiddenTopSite);
+        validateIndices(row, col);
+        return this.ufWithTop.connected(xyTo1D(row, col), this.virtualTopSite);
     }
 
     // number of open sites
@@ -87,7 +87,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return this.ufWithTopAndBottom.connected(this.hiddenTopSite, this.hiddenBottomSite);
+        return this.ufWithTopAndBottom.connected(this.virtualTopSite, this.virtualBottomSite);
     }
 
     // test client (optional)
