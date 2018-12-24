@@ -15,22 +15,32 @@ Here are two tricks in this implementation.
 
 2. Using two `WeightedQuickUnionUF` objects. One is `ufWithTopAndBottom`, which contains both `virtualTopSite` and `virtualBottomSite`.  It is used to check `percolates()`. Another is `ufWithTop` which only contians `virtualTopSite`. This object is used to check `isFull()`. The reason of this design is to avoid **backwash** demonstrating as follows:
 
-   ![](/Users/leon/Files/algorithms/hw/W1-percolation/img/percolation-backwash.png)
+   ![backwash](./img/percolation-backwash.png)
 
 ## How to Test
 
 This program passed all test cases (excepting ungraded Checkstyle) in Coursera. And you can use provided ` PercolationVisualizer.java` and `InteractivePercolationVisualizer.java` to test it.
 
 > ASSESSMENT SUMMARY
+>
 > Compilation:  PASSED
+>
 > API:          PASSED
+>
 > Spotbugs:     PASSED
+>
 > PMD:          PASSED
+>
 > Checkstyle:   FAILED (0 errors, 2 warnings)
+>
 > Correctness:  33/33 tests passed
+>
 > Memory:       8/8 tests passed
+>
 > Timing:       20/20 tests passed
+>
 > Aggregate score: 100.00%
+>
 > [Compilation: 5%, API: 5%, Spotbugs: 0%, PMD: 0%, Checkstyle: 0%, Correctness: 60%, Memory: 10%, Timing: 20%]
 
 ## Lincese
