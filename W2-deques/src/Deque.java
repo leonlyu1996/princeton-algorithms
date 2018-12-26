@@ -14,25 +14,25 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    private Node<Item> head;
-    private Node<Item> tail;
-    private int size;
+    private Node<Item> sentinel;
+    private int count;
 
     // construct an empty deque
     public Deque() {
-        this.head = null;
-        this.tail = null;
-        this.size = 0;
+        this.sentinel = new Node<>(null);
+        this.sentinel.next = this.sentinel;
+        this.sentinel.prev = this.sentinel;
+        count = 0;
     }
 
     // is the deque empty?
     public boolean isEmpty() {
-        return size == 0;
+        return count == 0;
     }
 
     // return the number of items on the deque
     public int size() {
-        return this.size;
+        return this.count;
     }
 
     // add the item to the front
@@ -41,15 +41,11 @@ public class Deque<Item> implements Iterable<Item> {
             throw new java.lang.IllegalArgumentException("item is null");
         }
         Node<Item> newNode = new Node<>(item);
-        if (this.tail == null) {
-            this.tail = newNode;
-        }
-        newNode.next = this.head;
-        if (this.head != null) {
-            this.head.prev = newNode;
-        }
-        this.head = newNode;
-        this.size++;
+        newNode.prev = this.sentinel;
+        newNode.next = this.sentinel.next;
+        newNode.next.prev = newNode;
+        newNode.prev.next = newNode;
+        this.count++;
     }
 
     // add the item to the end
@@ -58,15 +54,11 @@ public class Deque<Item> implements Iterable<Item> {
             throw new java.lang.IllegalArgumentException("item is null");
         }
         Node<Item> newNode = new Node<>(item);
-        if (this.head == null) {
-            this.head = newNode;
-        }
-        newNode.prev = this.tail;
-        if (this.tail != null) {
-            this.tail.next = newNode;
-        }
-        this.tail = newNode;
-        this.size++;
+        newNode.prev = this.sentinel.prev;
+        newNode.next = this.sentinel;
+        newNode.next.prev = newNode;
+        newNode.prev.next = newNode;
+        this.count++;
     }
 
     // remove and return the item from the front
@@ -74,14 +66,11 @@ public class Deque<Item> implements Iterable<Item> {
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException("deque is empty.");
         }
-        Item item = this.head.item;
-        this.head = this.head.next;
-        if (this.head != null) {
-            this.head.prev = null;
-        } else {
-            this.tail = null;
-        }
-        this.size--;
+        Node<Item> firstNode = this.sentinel.next;
+        Item item = firstNode.item;
+        this.sentinel.next = firstNode.next;
+        firstNode.next.prev = this.sentinel;
+        this.count--;
         return item;
     }
 
@@ -90,14 +79,11 @@ public class Deque<Item> implements Iterable<Item> {
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException("deque is empty.");
         }
-        Item item = this.tail.item;
-        this.tail = this.tail.prev;
-        if (this.tail != null) {
-            this.tail.next = null;
-        } else {
-            this.head = null;
-        }
-        this.size--;
+        Node<Item> lastNode = this.sentinel.prev;
+        Item item = lastNode.item;
+        this.sentinel.prev = lastNode.prev;
+        lastNode.prev.next = this.sentinel;
+        this.count--;
         return item;
     }
 
@@ -108,11 +94,11 @@ public class Deque<Item> implements Iterable<Item> {
 
     private class DequeIterator implements Iterator<Item> {
 
-        private Node<Item> current = head;
+        private Node<Item> current = sentinel.next;
 
         @Override
         public boolean hasNext() {
-            return current != null;
+            return current != sentinel;
         }
 
         @Override
