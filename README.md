@@ -3,6 +3,7 @@ This is a repository of assignments of course [Algorithms in Coursera](https://w
 ## Assignments
 
 - [x] [Assignment 1: Percolation](./W1-percolation)
+- [x] [Assignment2: Deques and Randomized Queues](./W2-deques)
 
 ## Usage
 
