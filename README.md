@@ -4,6 +4,7 @@ This is a repository of assignments of course [Algorithms in Coursera](https://w
 
 - [x] [Assignment 1: Percolation](./W1-percolation)
 - [x] [Assignment 2: Deques and Randomized Queues](./W2-deques)
+- [x] [Assignment 3: Pattern Recognition](./W3-collinear)  
 
 ## Usage
 
